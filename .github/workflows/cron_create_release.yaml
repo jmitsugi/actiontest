@@ -77,7 +77,7 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="$TAG" \
               --generate-notes
-          elif
+          else
             gh release create "$TAG" \
               --repo="$GITHUB_REPOSITORY" \
               --title="$TAG" \
