@@ -1,9 +1,6 @@
 name: cron_create_release
 
-on:
-  schedule:
-    # JST 3:00
-    - cron: "20 16 * * *"
+on: [ workflow_dispatch ]
 
 jobs:
   create_release:
