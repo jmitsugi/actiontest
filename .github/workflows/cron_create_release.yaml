@@ -8,8 +8,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Check out codes
-        uses: actions/checkout@v3
       - name: create New TagName
         id: create_new_tagname
         run: |
@@ -81,25 +79,3 @@ jobs:
 
           echo $NEW_TAG
           echo "newtag=$NEW_TAG" >> "$GITHUB_OUTPUT"
-
-      - name: create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG=${{ steps.create_new_tagname.outputs.newtag }}
-
-          #金曜の場合はlatest release,それ以外の場合はpre releaseとする。
-          if [ `date +"%w"` == 5 ]; then
-            gh release create "$TAG" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="$TAG" \
-              --generate-notes
-          else
-            gh release create "$TAG" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="$TAG" \
-              --generate-notes \
-              --prerelease
-          fi
-
-
