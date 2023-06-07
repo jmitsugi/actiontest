@@ -10,16 +10,21 @@ jobs:
     steps:
       - name: Check out codes
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: create New TagName
         id: create_new_tagname
         run: |
           #バージョン番号作成
-          gh release list | head -n 1 | awk '{ print $3 }'
+          LATEST_VERSION=`gh release list | head -n 1 | awk '{ print $3 }'`
+
+          #バージョン形式チェック
+          regex='v[0-9]+\.[0-9]+\.[0-9]+-[0-9]{8}-[0-9]{2}'
+          if [[ $LATEST_VERSION =~ $regex  ]] ;
+          then
+            echo "Cannot get latest releaseTag. LATEST_VERSION = $LATEST_VERSION"
+            exit 1
+          fi
 
           #バージョン番号作成
-          LATEST_VERSION=$(git tag --sort=-creatordate | head -1)
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
           MINOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $2}'`
           PATCH_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $3}'`
