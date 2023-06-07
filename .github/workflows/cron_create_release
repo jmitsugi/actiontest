@@ -1,0 +1,90 @@
+# Old workspace delete
+name: cron_create_release
+
+on:
+  schedule:
+    # JST 3:00
+    - cron: "0 15 * * *"
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Check out codes
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: create New TagName
+        id: create_new_tagname
+        run: |
+          #バージョン番号作成
+          LATEST_VERSION=$(git tag --sort=-creatordate | head -1)
+          MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
+          MINOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $2}'`
+          PATCH_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $3}'`
+          VERSION_DATE=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $4}'`
+          VERSION_DATE_COUNT=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $5}'`
+          CURRENT_DATE=`date '+%Y%m%d'`
+
+          NEW_TAG=`git diff --name-status $LATEST_VERSION origin/develop -w --ignore-blank-lines | \
+          awk -v v1=$MAJOR_VERSION -v v2=$MINOR_VERSION -v v3=$PATCH_VERSION -v v4=$VERSION_DATE -v v5=$VERSION_DATE_COUNT -v datestr=$CURRENT_DATE \
+          'BEGIN {
+              ap=0;
+              db=0;
+          }
+          {
+              # git diffの数だけ繰り返し
+              if($1=="A" || $1=="M" || $1=="D"){
+                  # 追加・更新・削除があれば
+                  if($2~/Program\/Source\/AP/){
+                      # Program/Source/AP配下のファイルに変更があれば、PATCH_VERSIONを上げる
+                      ap++
+                  }else if($2~/Program\/Source\/DB/){
+                      # Program/Source/DB配下のファイルに変更があれば、MINOR_VERSIONを上げる
+                      db++
+                  }
+              }
+          }
+          END {
+              if(db!=0){
+                  # MINOR_VERSIONを上げる
+                  v2++;
+                  v3=0;
+              }else if(ap!=0){
+                  # PATCH_VERSIONを上げる
+                  v3++;
+              }
+
+              if(v4=datestr){
+                  # 同一日付バージョンが存在する場合
+                  v5++
+              }else {
+                v4=datestr
+                v5=1
+              }
+              printf "v%d.%d.%d-%s-%02d\n",v1,v2,v3,v4,v5
+          }'`
+
+          echo "::set-output name=newtag::$NEW_TAG"
+
+      - name: create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ steps.create_new_tagname.outputs.newtag }}
+
+          #金曜の場合はlatest release,それ以外の場合はpre releaseとする。
+          if [ `date +"%w"` == 5 ]; then
+            gh release create "$TAG" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="$TAG" \
+              --generate-notes
+          elif
+            gh release create "$TAG" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="$TAG" \
+              --generate-notes \
+              --prerelease
+          fi
