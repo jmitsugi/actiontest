@@ -63,7 +63,7 @@ jobs:
               printf "v%d.%d.%d-%s-%02d\n",v1,v2,v3,v4,v5
           }'`
 
-          echo "::set-output name=newtag::$NEW_TAG"
+          echo "newtag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
       - name: create Release
         env:
@@ -77,10 +77,12 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="$TAG" \
               --generate-notes
-          else
+          elif
             gh release create "$TAG" \
               --repo="$GITHUB_REPOSITORY" \
               --title="$TAG" \
               --generate-notes \
               --prerelease
           fi
+
+
