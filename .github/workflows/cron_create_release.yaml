@@ -3,7 +3,7 @@ name: cron_create_release
 on:
   schedule:
     # JST 3:00
-    - cron: "0 15 * * *"
+    - cron: "20 16 * * *"
 
 jobs:
   create_release:
