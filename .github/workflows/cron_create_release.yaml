@@ -12,6 +12,8 @@ jobs:
         id: create_new_tagname
         run: |
           #バージョン番号作成
+
+          #最終リリースバージョンのタグ名取得
           LATEST_VERSION=`gh release list --repo $GITHUB_REPOSITORY | head -n 1 | awk '{ print $3 }'`
 
           #バージョン形式チェック
@@ -79,3 +81,25 @@ jobs:
 
           echo $NEW_TAG
           echo "newtag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ steps.create_new_tagname.outputs.newtag }}
+
+          #金曜の場合はlatest release,それ以外の場合はpre releaseとする。
+          if [ `date +"%w"` == 5 ]; then
+            gh release create "$TAG" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="$TAG" \
+              --generate-notes
+          else
+            gh release create "$TAG" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="$TAG" \
+              --generate-notes \
+              --prerelease
+          fi
+
+
