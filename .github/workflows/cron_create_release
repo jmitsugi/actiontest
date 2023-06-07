@@ -1,4 +1,3 @@
-# Old workspace delete
 name: cron_create_release
 
 on:
