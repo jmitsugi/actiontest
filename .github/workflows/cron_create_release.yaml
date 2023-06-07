@@ -16,8 +16,8 @@ jobs:
         id: create_new_tagname
         run: |
           #バージョン番号作成
-          gh release list | tail -n +2
-          
+          gh release list
+
           #バージョン番号作成
           LATEST_VERSION=$(git tag --sort=-creatordate | head -1)
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
