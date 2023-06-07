@@ -8,6 +8,9 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - uses: actions/checkout@v3
+        with:
+        fetch-depth: 0
       - name: create New TagName
         id: create_new_tagname
         run: |
@@ -101,5 +104,3 @@ jobs:
               --generate-notes \
               --prerelease
           fi
-
-
