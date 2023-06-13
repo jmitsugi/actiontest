@@ -8,14 +8,10 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          sparse-checkout: .
       - name: create New TagName
         id: create_new_tagname
         run: |
           #バージョン番号作成
-
           #最終リリースバージョンのタグ名取得
           LATEST_VERSION=`gh release list --repo $GITHUB_REPOSITORY | head -n 1 | awk '{ print $3 }'`
 
@@ -26,6 +22,9 @@ jobs:
             echo "Cannot get latest releaseTag. LATEST_VERSION = $LATEST_VERSION"
             exit 1
           fi
+
+          #githubから$LATEST_VERSION以後だけ取得
+          gh repo clone $GITHUB_REPOSITORY -- -b develop --single-branch --shallow-exclude $LATEST_VERSION
 
           #バージョン番号作成
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
