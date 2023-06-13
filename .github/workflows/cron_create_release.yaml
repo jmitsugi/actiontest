@@ -24,7 +24,7 @@ jobs:
           fi
 
           #githubから$LATEST_VERSION以後だけ取得
-          gh repo clone $GITHUB_REPOSITORY -- -b develop --single-branch --shallow-exclude $LATEST_VERSION
+          gh repo clone $GITHUB_REPOSITORY . -- -b develop --single-branch --shallow-exclude $LATEST_VERSION
 
           #バージョン番号作成
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
@@ -41,6 +41,7 @@ jobs:
           echo $VERSION_DATE
           echo $VERSION_DATE_COUNT
           echo $CURRENT_DATE
+          echo `git diff --name-status $LATEST_VERSION origin/develop -w --ignore-blank-lines`
 
           NEW_TAG=`git diff --name-status $LATEST_VERSION origin/develop -w --ignore-blank-lines | \
           awk -v v1=$MAJOR_VERSION -v v2=$MINOR_VERSION -v v3=$PATCH_VERSION -v v4=$VERSION_DATE -v v5=$VERSION_DATE_COUNT -v datestr=$CURRENT_DATE \
