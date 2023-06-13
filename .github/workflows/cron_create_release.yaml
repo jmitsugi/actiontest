@@ -15,6 +15,9 @@ jobs:
           #最終リリースバージョンのタグ名取得
           LATEST_VERSION=`gh release list --repo $GITHUB_REPOSITORY | head -n 1 | awk '{ print $3 }'`
 
+          #最終リリースバージョン1つ前のタグ名取得
+          SHALLOW_EXCLUDE_VERSION=`gh release list --repo $GITHUB_REPOSITORY | head -n 2 | tail -n 1 | awk '{ print $3 }'`
+
           #バージョン形式チェック
           regex='v[0-9]+\.[0-9]+\.[0-9]+-[0-9]{8}-[0-9]{2}'
           if [[ ! $LATEST_VERSION =~ $regex ]] ;
@@ -24,7 +27,7 @@ jobs:
           fi
 
           #githubから$LATEST_VERSION以後だけ取得
-          gh repo clone $GITHUB_REPOSITORY . -- -b develop --single-branch --shallow-exclude $LATEST_VERSION
+          gh repo clone $GITHUB_REPOSITORY . -- -b develop --single-branch --shallow-exclude $SHALLOW_EXCLUDE_VERSION
 
           #バージョン番号作成
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
