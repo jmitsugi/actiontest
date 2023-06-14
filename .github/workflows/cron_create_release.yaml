@@ -3,14 +3,14 @@ name: cron_create_release
 on:
   workflow_dispatch:
   schedule:
-    # Run at AM 03:00 on every Monday
-    - cron:  '17 10 * * *'
-
+    # AM 03:49 JST 火,水,木,金  (18:49 UTC 月,火,水,木) 
+    - cron:  '49 18 * * 1,2,3,4' 
 jobs:
   create_release:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TZ: 'Asia/Tokyo'
     steps:
       - uses: actions/checkout@v3
       - name: create New TagName
@@ -94,6 +94,7 @@ jobs:
       - name: create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TZ: 'Asia/Tokyo'
         run: |
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
 
