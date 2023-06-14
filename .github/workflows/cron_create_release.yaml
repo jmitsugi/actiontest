@@ -36,6 +36,7 @@ jobs:
           VERSION_DATE_COUNT=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $5}'`
           CURRENT_DATE=`date '+%Y%m%d'`
 
+          echo "LATEST_VERSION = $LATEST_VERSION"
           echo $LATEST_VERSION
           echo $MAJOR_VERSION
           echo $MINOR_VERSION
@@ -56,10 +57,10 @@ jobs:
                   # 追加・更新・削除があれば
                   if($2~/Program\/Source\/AP/){
                       # Program/Source/AP配下のファイルに変更があれば、PATCH_VERSIONを上げる
-                      ap++
+                      ap++;
                   }else if($2~/Program\/Source\/DB/){
                       # Program/Source/DB配下のファイルに変更があれば、MINOR_VERSIONを上げる
-                      db++
+                      db++;
                   }
               }
           }
@@ -75,10 +76,10 @@ jobs:
 
               if(v4=datestr){
                   # 同一日付バージョンが存在する場合
-                  v5++
+                  v5++;
               }else {
-                v4=datestr
-                v5=1
+                v4=datestr;
+                v5=1;
               }
               printf "v%d.%d.%d-%s-%02d\n",v1,v2,v3,v4,v5
           }'`
