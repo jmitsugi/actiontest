@@ -84,6 +84,7 @@ jobs:
           }'`
 
           echo $NEW_TAG
+          echo "latesttag=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
           echo "newtag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
       - name: create Release
@@ -110,12 +111,33 @@ jobs:
         with:
           ref: ${{ steps.create_new_tagname.outputs.newtag }}
 
-      - name: Zip artifact for deployment
-        run: (cd Program/Sources; zip -r ../../Program_Sources_DB.zip *) 
+      - name: Zip DB Folder
+        run: (cd Program/Sources; zip -r ../../Program_Sources_DB.zip *)
 
-      - name: Upload artifact for deployment job
+      - name: Upload DB Folder
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
-            gh release upload "$TAG" Program_Sources_DB.zip
+          gh release upload "$TAG" Program_Sources_DB.zip
+
+      - name: Zip & Upload  Patch Folder
+        run: |
+          LATEST_TAG=${{ steps.create_new_tagname.outputs.latesttag }}
+          TAG=${{ steps.create_new_tagname.outputs.newtag }}
+          #diff取得
+          IFS=$'\n' read -r -d '' -a patch_diff_list < <( git diff $LATEST_TAG $TAG --name-status -w --ignore-blank-lines --relative Program/Sources/DB/Patch && printf '\0' )
+
+          #patch dir取得
+          declare -A uniq_patch_dir
+
+          for diff in "${patch_diff_list[@]}"; do
+              uniq_patch_dir[`echo $diff | sed -r "s/.*Patch\/(.+)\/.+/\1/g"`]=0 # assigning a placeholder
+          done
+          echo "patch dir name: ${!uniq_patch_dir[@]}"
+
+          #zip化、Upload
+          for patch_dir in "${!uniq_patch_dir[@]}"; do
+              (cd Program/Sources/DB/Patch; zip -r ../../../../$patch_dir.zip ./$patch_dir)
+              gh release upload "$TAG" $patch_dir.zip
+          done
