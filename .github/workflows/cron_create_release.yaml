@@ -73,7 +73,7 @@ jobs:
                   v3++;
               }
 
-              if(v4=datestr){
+              if(v4==datestr){
                   # 同一日付バージョンが存在する場合
                   v5++
               }else {
@@ -111,7 +111,7 @@ jobs:
           ref: ${{ steps.create_new_tagname.outputs.newtag }}
 
       - name: Zip artifact for deployment
-        run: zip Program_Source_DB.zip ./Program/Source/DB* -r
+        run: zip Program_Source_DB.zip ./Program/Source/DB -r
 
       - name: Upload artifact for deployment job
         env:
