@@ -138,6 +138,6 @@ jobs:
 
           #zip化、Upload
           for patch_dir in "${!uniq_patch_dir[@]}"; do
-              (cd Program/Sources/DB; zip -r ../../../$patch_dir.zip ./$patch_dir)
+              (cd Program/Sources/DB/Patch; zip -r ../../../../$patch_dir.zip ./$patch_dir)
               gh release upload "$TAG" $patch_dir.zip
           done
