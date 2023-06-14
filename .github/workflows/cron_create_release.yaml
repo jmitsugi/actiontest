@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Run at AM 03:00 on every Monday
-    - cron:  '0 10 * * *'
+    - cron:  '17 10 * * *'
 
 jobs:
   create_release:
