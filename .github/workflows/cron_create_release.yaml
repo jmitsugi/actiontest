@@ -54,11 +54,11 @@ jobs:
               # git diffの数だけ繰り返し
               if($1=="A" || $1=="M" || $1=="D"){
                   # 追加・更新・削除があれば
-                  if($2~/Program\/Source\/AP/){
-                      # Program/Source/AP配下のファイルに変更があれば、PATCH_VERSIONを上げる
+                  if($2~/Program\/Sources\/AP/){
+                      # Program/Sources/AP配下のファイルに変更があれば、PATCH_VERSIONを上げる
                       ap++
-                  }else if($2~/Program\/Source\/DB/){
-                      # Program/Source/DB配下のファイルに変更があれば、MINOR_VERSIONを上げる
+                  }else if($2~/Program\/Sources\/DB/){
+                      # Program/Sources/DB配下のファイルに変更があれば、MINOR_VERSIONを上げる
                       db++
                   }
               }
@@ -111,11 +111,11 @@ jobs:
           ref: ${{ steps.create_new_tagname.outputs.newtag }}
 
       - name: Zip artifact for deployment
-        run: zip Program_Source_DB.zip ./Program/Source/DB -r
+        run: (cd Program/Sources/DB; zip -r ../../../Program_Sources_DB.zip *) 
 
       - name: Upload artifact for deployment job
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
-            gh release upload "$TAG" Program_Source_DB.zip
+            gh release upload "$TAG" Program_Sources_DB.zip
