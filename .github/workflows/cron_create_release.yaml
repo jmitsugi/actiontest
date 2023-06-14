@@ -111,7 +111,7 @@ jobs:
           ref: ${{ steps.create_new_tagname.outputs.newtag }}
 
       - name: Zip artifact for deployment
-        run: (cd Program/Sources/DB; zip -r ../../../Program_Sources_DB.zip *) 
+        run: (cd Program/Sources; zip -r ../../Program_Sources_DB.zip *) 
 
       - name: Upload artifact for deployment job
         env:
