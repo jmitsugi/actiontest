@@ -5,12 +5,13 @@ on:
   schedule:
     # AM 03:49 JST 火,水,木,金  (18:49 UTC 月,火,水,木) 
     - cron:  '49 18 * * 1,2,3,4' 
+    - cron:  '39 15 * * 1,2,3,4' 
+env:
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+  TZ: 'Asia/Tokyo'
 jobs:
   create_release:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TZ: 'Asia/Tokyo'
     steps:
       - uses: actions/checkout@v3
       - name: create New TagName
@@ -87,9 +88,6 @@ jobs:
           echo "newtag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
       - name: create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TZ: 'Asia/Tokyo'
         run: |
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
 
@@ -116,8 +114,6 @@ jobs:
         run: (cd Program/Sources; zip -r ../../Program_Sources_DB.zip ./DB)
 
       - name: Upload DB Folder
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
           gh release upload "$TAG" Program_Sources_DB.zip
