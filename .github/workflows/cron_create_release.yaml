@@ -5,10 +5,11 @@ on:
   schedule:
     # AM 03:49 JST 火,水,木,金  (18:49 UTC 月,火,水,木) 
     - cron:  '49 18 * * 1,2,3,4' 
-    - cron:  '39 15 * * 1,2,3,4' 
+
 env:
-  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
   TZ: 'Asia/Tokyo'
+
 jobs:
   create_release:
     runs-on: ubuntu-latest
