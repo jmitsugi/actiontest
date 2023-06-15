@@ -30,7 +30,7 @@ jobs:
           fi
 
           #git diff実行のためタグ情報取得
-          git fetch --depth 0 origin tag $LATEST_VERSION
+          git fetch --depth 1 origin tag $LATEST_VERSION
 
           #バージョン番号作成
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
