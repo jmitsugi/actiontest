@@ -117,7 +117,7 @@ jobs:
           ref: ${{ steps.create_new_tagname.outputs.newtag }}
 
       - name: Zip DB Folder
-        run: (cd Program/Sources; zip -r ../../Program_Sources_DB.zip *)
+        run: (cd Program/Sources; zip -r ../../Program_Sources_DB.zip ./DB)
 
       - name: Upload DB Folder
         env:
