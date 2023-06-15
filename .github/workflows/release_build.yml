@@ -1,0 +1,13 @@
+name: release_build
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  release_build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "release build start"
+
