@@ -29,8 +29,8 @@ jobs:
             exit 1
           fi
 
-          #git diffのためタグ情報取得
-          git fetch --depth 1 origin tag $LATEST_VERSION
+          #git diff実行のためタグ情報取得
+          git fetch --depth 0 origin tag $LATEST_VERSION
 
           #バージョン番号作成
           MAJOR_VERSION=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $1}'`
@@ -40,13 +40,7 @@ jobs:
           VERSION_DATE_COUNT=`echo $LATEST_VERSION | awk '{print substr($0, 2)}' | awk -F '[.-]' '{print $5}'`
           CURRENT_DATE=`date '+%Y%m%d'`
 
-          echo $LATEST_VERSION
-          echo $MAJOR_VERSION
-          echo $MINOR_VERSION
-          echo $PATCH_VERSION
-          echo $VERSION_DATE
-          echo $VERSION_DATE_COUNT
-          echo $CURRENT_DATE
+          echo "Start create new tagname. LATEST_VERSION = $LATEST_VERSION, CURRENT_DATE = $CURRENT_DATE"
 
           NEW_TAG=`git diff --name-status $LATEST_VERSION origin/develop -w --ignore-blank-lines | \
           awk -v v1=$MAJOR_VERSION -v v2=$MINOR_VERSION -v v3=$PATCH_VERSION -v v4=$VERSION_DATE -v v5=$VERSION_DATE_COUNT -v datestr=$CURRENT_DATE \
@@ -87,7 +81,8 @@ jobs:
               printf "v%d.%d.%d-%s-%02d\n",v1,v2,v3,v4,v5
           }'`
 
-          echo $NEW_TAG
+          echo "NEW_TAG = $NEW_TAG"
+          #outputする
           echo "latesttag=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
           echo "newtag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
@@ -98,7 +93,8 @@ jobs:
         run: |
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
 
-          #金曜の場合はlatest release,それ以外の場合はpre releaseとする。
+          # GitHub側で、Tag作成+Release作成 
+          # 金曜の場合はlatest release,それ以外の場合はpre releaseとする。
           if [ `date +"%w"` == 5 ]; then
             gh release create "$TAG" \
               --repo="$GITHUB_REPOSITORY" \
@@ -130,10 +126,10 @@ jobs:
         run: |
           LATEST_TAG=${{ steps.create_new_tagname.outputs.latesttag }}
           TAG=${{ steps.create_new_tagname.outputs.newtag }}
-          #diff取得
+          #diff取得、patch_diff_list配列に入れる
           IFS=$'\n' read -r -d '' -a patch_diff_list < <( git diff $LATEST_TAG $TAG --name-status -w --ignore-blank-lines --relative Program/Sources/DB/Patch && printf '\0' )
 
-          #patch dir取得
+          #patch dirの名称を一意にする
           declare -A uniq_patch_dir
 
           for diff in "${patch_diff_list[@]}"; do
