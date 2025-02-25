@@ -1,7 +1,7 @@
 name: Issue
 description: DNEXUSにおけるIssueテンプレートです。
 labels: ["issue"]
-title: "[DNEXUS Issue]"
+title: "[XXXXX Issue]"
 body:
   - type: markdown
     id: notice
