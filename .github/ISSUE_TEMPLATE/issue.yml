@@ -1,0 +1,52 @@
+name: Issue
+description: DNEXUSにおけるIssueテンプレートです。
+labels: ["issue"]
+title: "[DNEXUS Issue]"
+body:
+  - type: markdown
+    id: notice
+    attributes:
+      value: |
+        Issue起票する際に、以下の設定も合わせて実施するようにお願いします。
+        - Assignees(必須):作業実施者を指定する
+        - Milestone(任意):大区分ごとに指定されるMileStoneを指定する
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Issueの要約
+      description: Issueの要約を記載してください。
+      placeholder: |
+        （例）
+        要件定義書と機能一覧記載内容の整合性が取れていない
+  
+  - type: checkboxes
+    id: area
+    attributes:
+      label: カテゴリ
+      description: Issueの該当領域を選択してください。
+      options:
+        - label: 機能要件
+        - label: 非機能要件
+        - label: Backend
+        - label: Frontend
+        - label: インフラ
+
+  - type: dropdown
+    id: inneed
+    attributes:
+      label: 対応
+      description: 期日までに対応は必要ですか。下記から選択してください。対応必要な場合は合わせて対応期日の記入をお願いします。
+      options:
+        - 不要
+        - 必要
+      default: 0
+
+  - type: input
+    id: dueDate
+    attributes:
+      label: 対応期日
+      description: 上記で[対応必要]を選択した場合、対応期日を記入してください。
+      placeholder: |
+        （例）
+        2024/12
